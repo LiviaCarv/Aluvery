@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,10 +29,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.project.aluvery.R
 import com.project.aluvery.extensions.toBrazilianCurrency
 import com.project.aluvery.model.Product
-import com.project.aluvery.ui.theme.Purple200
-import com.project.aluvery.ui.theme.Teal200
 import java.math.BigDecimal
 
 @Composable
@@ -52,7 +52,8 @@ fun ProductItem(
                     .background(
                         brush = Brush.horizontalGradient(
                             colors = listOf(
-                                Purple200, Teal200
+                                MaterialTheme.colorScheme.primary,
+                                MaterialTheme.colorScheme.secondary
                             )
                         )
                     )
@@ -60,7 +61,8 @@ fun ProductItem(
                     .height(100.dp)
             ) {
                 Image(
-                    painterResource(id = product.image),
+                    // TODO
+                    painterResource(id = R.drawable.placeholder),
                     contentDescription = "Product Image",
                     modifier = Modifier
                         .size(imageSize)
@@ -74,7 +76,7 @@ fun ProductItem(
             Spacer(Modifier.height(imageSize / 2))
             Column(Modifier.padding(16.dp)) {
                 Text(
-                    text = product.description,
+                    text = product.name,
                     fontSize = 18.sp,
                     fontWeight = FontWeight(700),
                     maxLines = 2,
