@@ -1,6 +1,5 @@
 package com.project.aluvery.ui.components
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,12 +22,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.project.aluvery.R
 import com.project.aluvery.extensions.toBrazilianCurrency
 import com.project.aluvery.model.Product
@@ -60,9 +62,12 @@ fun ProductItem(
                     .fillMaxWidth()
                     .height(100.dp)
             ) {
-                Image(
-                    // TODO
-                    painterResource(id = R.drawable.placeholder),
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(product.image)
+                        .crossfade(true)
+                        .build(),
+                    placeholder = painterResource(R.drawable.placeholder),
                     contentDescription = "Product Image",
                     modifier = Modifier
                         .size(imageSize)
@@ -98,5 +103,11 @@ fun ProductItem(
 @Preview(showBackground = true)
 @Composable
 private fun ProductItemPreview() {
-    ProductItem(Product("Burguer", price = BigDecimal("14.99")))
+    ProductItem(
+        Product(
+            name = "Chocolate",
+            price = BigDecimal("3.99"),
+            image = "https://images.pexels.com/photos/65882/chocolate-dark-coffee-confiserie-65882.jpeg",
+        )
+    )
 }
