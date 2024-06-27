@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -39,23 +41,40 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.project.aluvery.extensions.toBrazilianCurrency
+import com.project.aluvery.model.Product
 import com.project.aluvery.ui.theme.AluveryTheme
 import com.project.aluvery.ui.theme.Purple200
 import com.project.aluvery.ui.theme.Teal200
+import java.math.BigDecimal
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            AluveryTheme {
-                ProductSection()
-            }
+           App()
+        }
+    }
+}
+
+@Composable
+fun App() {
+    AluveryTheme {
+        Column(modifier = Modifier
+            .fillMaxSize()
+            .padding(vertical = 16.dp)
+            .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            ProductSection()
+            ProductSection()
+            ProductSection()
         }
     }
 }
 
 @Composable
 fun ProductItem(
+    product: Product,
     modifier: Modifier = Modifier
 ) {
 
@@ -79,7 +98,7 @@ fun ProductItem(
                     .height(100.dp)
             ) {
                 Image(
-                    painterResource(id = R.drawable.ic_launcher_background),
+                    painterResource(id = product.image),
                     contentDescription = "Product Image",
                     modifier = Modifier
                         .size(imageSize)
@@ -93,14 +112,14 @@ fun ProductItem(
             Spacer(Modifier.height(imageSize / 2))
             Column(Modifier.padding(16.dp)) {
                 Text(
-                    text = "Product description",
+                    text = product.description,
                     fontSize = 18.sp,
                     fontWeight = FontWeight(700),
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
                 Text(
-                    text = "R$ 19,99",
+                    text = product.price.toBrazilianCurrency(),
                     modifier = Modifier.padding(top = 8.dp),
                     fontSize = 14.sp,
                     fontWeight = FontWeight(400)
@@ -119,7 +138,7 @@ fun ProductSection(
     Column(modifier) {
         Text(
             text = "Items with Promotional Value",
-            modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp),
+            modifier = Modifier.padding(start = 16.dp, end = 16.dp),
             fontSize = 20.sp,
             fontWeight = FontWeight(400)
         )
@@ -127,24 +146,29 @@ fun ProductSection(
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             modifier = Modifier
                 .horizontalScroll(rememberScrollState())
-                .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
+                .padding(start = 16.dp, end = 16.dp)
         ) {
-            ProductItem()
-            ProductItem()
-            ProductItem()
+            ProductItem(Product(description = "Burguer", price = BigDecimal("12.99"), image = R.drawable.burger))
+            ProductItem(Product(description = "Fries", price = BigDecimal("5"), image =  R.drawable.fries))
+            ProductItem(Product(description = "Pizza", price = BigDecimal("29.60"), image = R.drawable.pizza))
         }
     }
+}
+
+@Preview(showSystemUi = true)
+@Composable
+private fun AppPreview() {
+    App()
 }
 
 @Preview(showBackground = true)
 @Composable
 fun ProductItemPreview() {
-    ProductItem()
+    ProductItem(Product("Burguer", price = BigDecimal("14.99")))
 }
 
 @Preview(showBackground = true, widthDp = 500)
 @Composable
 fun ProductSectionPreview() {
-
     ProductSection()
 }
