@@ -45,7 +45,7 @@ fun SearchBar(
         maxLines = 1,
         modifier = modifier
             .fillMaxWidth()
-            .padding(top = 16.dp, start = 16.dp, end = 16.dp)
+            .padding(16.dp)
     )
 }
 

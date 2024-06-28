@@ -42,15 +42,15 @@ fun ProductItem(
     modifier: Modifier = Modifier
 ) {
 
-    Surface(shape = RoundedCornerShape(15.dp), shadowElevation = 4.dp) {
+    Surface(shape = RoundedCornerShape(15.dp), shadowElevation = 4.dp, modifier = modifier) {
         Column(
-            modifier
+            Modifier
                 .width(200.dp)
                 .heightIn(min = 250.dp, max = 300.dp)
         ) {
             val imageSize = 100.dp
             Box(
-                modifier
+                Modifier
                     .background(
                         brush = Brush.horizontalGradient(
                             colors = listOf(
