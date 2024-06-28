@@ -1,8 +1,7 @@
 package com.project.aluvery.ui.components
 
-import android.graphics.Paint.Style
-import android.graphics.fonts.FontStyle
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -14,12 +13,15 @@ import androidx.compose.material3.CardElevation
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -38,13 +40,18 @@ fun CardProductItem(
     modifier: Modifier = Modifier,
     elevation: CardElevation = CardDefaults.cardElevation(4.dp)
 ) {
+    var expandedDescription by rememberSaveable {
+        mutableStateOf(false)
+    }
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .heightIn(min = 150.dp),
+            .heightIn(min = 150.dp)
+            .clickable { expandedDescription = !expandedDescription },
         elevation = elevation
     ) {
         Column {
+
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
                     .data(product.image)
@@ -65,17 +72,25 @@ fun CardProductItem(
                     .padding(10.dp)
             ) {
                 Text(text = product.name, color = Color.White, fontWeight = FontWeight.Bold)
-                Text(text = product.price.toBrazilianCurrency(),color = Color.White)
+                Text(text = product.price.toBrazilianCurrency(), color = Color.White)
             }
+            val textOverflow =
+                if (expandedDescription) TextOverflow.Visible
+                else TextOverflow.Ellipsis
+            val maxLines =
+                if (expandedDescription) Int.MAX_VALUE
+                else 2
 
-           product.description?.let {
-               Text(
-                   text = product.description,
-                   modifier = Modifier.padding(10.dp),
-                   maxLines = 5,
-                   overflow = TextOverflow.Ellipsis
-               )
-           }
+
+            product.description?.let {
+                Text(
+                    text = product.description,
+                    modifier = Modifier.padding(10.dp),
+                    maxLines = maxLines,
+                    overflow = textOverflow
+                )
+
+            }
         }
     }
 }

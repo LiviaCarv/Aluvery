@@ -2,4 +2,5 @@
     <string name="app_name">Aluvery</string>
     <string name="product">Product</string>
     <string name="what_are_you_looking_for">What are you looking for?</string>
+    <string name="empty_list">Empty list.</string>
 </resources>
