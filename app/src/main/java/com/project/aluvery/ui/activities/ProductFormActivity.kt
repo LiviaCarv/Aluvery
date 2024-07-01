@@ -1,6 +1,7 @@
-package com.project.aluvery.activities
+package com.project.aluvery.ui.activities
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Arrangement
@@ -35,6 +36,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.project.aluvery.R
+import com.project.aluvery.model.Product
+import com.project.aluvery.sample.sampleSections
+import com.project.aluvery.ui.screens.HomeScreen
 import com.project.aluvery.ui.theme.AluveryTheme
 import java.math.BigDecimal
 import java.text.DecimalFormat
@@ -43,7 +47,11 @@ class ProductFormActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            ProductFormScreen()
+            AluveryTheme {
+                Surface {
+                    ProductFormScreen()
+                }
+            }
         }
     }
 }
@@ -148,26 +156,23 @@ fun ProductFormScreen(
                 .fillMaxWidth()
                 .heightIn(min = 150.dp)
         )
-//        val convertedPrice = try {
-//            BigDecimal(price)
-//        } catch (e: NumberFormatException) {
-//            BigDecimal.ZERO
-//        }
-//
-//        val product = Product(
-//            name = productName,
-//            price = convertedPrice,
-//            description = description,
-//            image = url
-//        )
 
         Button(
             onClick = {
-
-
+                val convertedPrice = try {
+                    BigDecimal(price)
+                } catch (e: NumberFormatException) {
+                    BigDecimal.ZERO
+                }
+                val product = Product(
+                    name = productName,
+                    image = url,
+                    price = convertedPrice,
+                    description = description
+                )
+                Log.i("ProductFormActivity", "ProductFormScreen: $product")
             },
-            modifier = Modifier
-                .fillMaxWidth()
+            Modifier.fillMaxWidth(),
         ) {
             Text(text = "Save")
         }
