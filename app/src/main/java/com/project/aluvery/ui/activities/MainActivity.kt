@@ -15,24 +15,37 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.project.aluvery.sample.sampleSections
+import com.project.aluvery.dao.ProductDao
+import com.project.aluvery.sample.sampleCandies
+import com.project.aluvery.sample.sampleDrinks
 import com.project.aluvery.ui.screens.HomeScreen
 import com.project.aluvery.ui.theme.AluveryTheme
 
 class MainActivity : ComponentActivity() {
+    private val dao = ProductDao()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             App(onFabClick = {
                 startActivity(Intent(this, ProductFormActivity::class.java))
-            })
+            }) {
+                val sections = mapOf(
+                    "Products" to dao.getProducts(),
+                    "Promotional Items" to sampleCandies + sampleDrinks,
+                    "Candies" to sampleCandies,
+                    "Drinks" to sampleDrinks,
+
+                    )
+                HomeScreen(sections = sections)
+            }
         }
     }
 }
 
 @Composable
 fun App(
-    onFabClick: () -> Unit = {}
+    onFabClick: () -> Unit = {},
+    content: @Composable () -> Unit = {}
 ) {
     AluveryTheme {
         Surface {
@@ -47,9 +60,7 @@ fun App(
                 }
             ) { paddingValues ->
                 Box(modifier = Modifier.padding(paddingValues)) {
-                    HomeScreen(
-                        sampleSections
-                    )
+                    content()
                 }
             }
 

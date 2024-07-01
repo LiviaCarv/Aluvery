@@ -1,7 +1,6 @@
 package com.project.aluvery.ui.activities
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Arrangement
@@ -36,20 +35,24 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.project.aluvery.R
+import com.project.aluvery.dao.ProductDao
 import com.project.aluvery.model.Product
-import com.project.aluvery.sample.sampleSections
-import com.project.aluvery.ui.screens.HomeScreen
 import com.project.aluvery.ui.theme.AluveryTheme
 import java.math.BigDecimal
 import java.text.DecimalFormat
 
 class ProductFormActivity : ComponentActivity() {
+    private val dao = ProductDao()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             AluveryTheme {
                 Surface {
-                    ProductFormScreen()
+                    ProductFormScreen(onSaveClick = { product ->
+                        dao.saveProduct(product)
+                        finish()
+                    })
                 }
             }
         }
@@ -58,7 +61,8 @@ class ProductFormActivity : ComponentActivity() {
 
 @Composable
 fun ProductFormScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onSaveClick: (Product) -> Unit = {}
 ) {
     var url by rememberSaveable { mutableStateOf("") }
     var productName by rememberSaveable { mutableStateOf("") }
@@ -170,7 +174,7 @@ fun ProductFormScreen(
                     price = convertedPrice,
                     description = description
                 )
-                Log.i("ProductFormActivity", "ProductFormScreen: $product")
+                onSaveClick(product)
             },
             Modifier.fillMaxWidth(),
         ) {
