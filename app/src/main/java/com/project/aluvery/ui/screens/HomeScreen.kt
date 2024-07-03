@@ -13,7 +13,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -28,42 +27,51 @@ import com.project.aluvery.ui.components.CardProductItem
 import com.project.aluvery.ui.components.ProductSection
 import com.project.aluvery.ui.components.SearchBar
 
-class HomeScreenUiState(searchText: String = "") {
+class HomeScreenUiState(
+    val sections: Map<String, List<Product>>,
+    private val products: List<Product> = emptyList(),
+    searchText: String = ""
+) {
     var text by mutableStateOf(searchText)
+        private set
     val filter
         get() = if (text.isNotBlank()) {
             sampleProducts.filter {
-                it.name.contains(text, ignoreCase = true) || it.description?.contains(
-                    text,
-                    ignoreCase = true
-                ) ?: false
+                containsInNameOrDescription(it)
+            } + products.filter {
+                containsInNameOrDescription(it)
             }
         } else emptyList()
 
-    fun isFilterActive() : Boolean {
+    private fun containsInNameOrDescription(prod: Product) =
+        prod.name.contains(text, ignoreCase = true) || prod.description?.contains(
+            text,
+            ignoreCase = true
+        ) ?: false
+
+    fun isFilterActive(): Boolean {
         return text.isNotBlank()
+    }
+
+    val onSearchChange: (String) -> Unit = { searchText ->
+        text = searchText
     }
 }
 
 @Composable
 fun HomeScreen(
-    sections: Map<String, List<Product>>,
-    modifier: Modifier = Modifier,
-    searchText: String = ""
+    state: HomeScreenUiState,
+    modifier: Modifier = Modifier
 ) {
-    val state = remember {
-        HomeScreenUiState(searchText)
-    }
     val text = state.text
     val filter = remember(text) {
         state.filter
     }
+    val sections = state.sections
 
     Column(modifier) {
 
-        SearchBar(text, { newValue ->
-            state.text = newValue
-        })
+        SearchBar(text = text, onValueChange = { newText -> state.onSearchChange(newText) })
 
         LazyColumn(
             modifier = Modifier
@@ -107,5 +115,5 @@ fun HomeScreen(
 @Preview(showSystemUi = true)
 @Composable
 private fun HomeScreenPreview() {
-    HomeScreen(sampleSections, searchText = "aaaa")
+    HomeScreen(state = HomeScreenUiState(sampleSections, searchText = "AA"))
 }

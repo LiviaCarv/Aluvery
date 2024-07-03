@@ -13,7 +13,9 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.project.aluvery.dao.ProductDao
@@ -21,6 +23,7 @@ import com.project.aluvery.sample.sampleCandies
 import com.project.aluvery.sample.sampleDrinks
 import com.project.aluvery.sample.sampleSections
 import com.project.aluvery.ui.screens.HomeScreen
+import com.project.aluvery.ui.screens.HomeScreenUiState
 import com.project.aluvery.ui.theme.AluveryTheme
 
 class MainActivity : ComponentActivity() {
@@ -31,14 +34,18 @@ class MainActivity : ComponentActivity() {
             App(onFabClick = {
                 startActivity(Intent(this, ProductFormActivity::class.java))
             }) {
+                val products = dao.getProducts()
                 val sections = mapOf(
-                    "Products" to dao.getProducts(),
+                    "Products" to products,
                     "Promotional Items" to sampleCandies + sampleDrinks,
                     "Candies" to sampleCandies,
                     "Drinks" to sampleDrinks,
 
                     )
-                HomeScreen(sections = sections)
+                val state = remember(products) {
+                    HomeScreenUiState(sections, products = products)
+                }
+                HomeScreen(state = state)
             }
         }
     }
@@ -73,6 +80,6 @@ fun App(
 @Preview
 @Composable
 private fun AppPreview() {
-    App(content = { HomeScreen(sections = sampleSections) })
+    App(content = { HomeScreen(HomeScreenUiState(sampleSections)) })
 }
 
