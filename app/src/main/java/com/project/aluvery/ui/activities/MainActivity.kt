@@ -1,6 +1,7 @@
 package com.project.aluvery.ui.activities
 
 import android.content.Intent
+import android.net.wifi.hotspot2.pps.HomeSp
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -18,6 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.project.aluvery.dao.ProductDao
 import com.project.aluvery.sample.sampleCandies
 import com.project.aluvery.sample.sampleDrinks
+import com.project.aluvery.sample.sampleSections
 import com.project.aluvery.ui.screens.HomeScreen
 import com.project.aluvery.ui.theme.AluveryTheme
 
@@ -71,6 +73,6 @@ fun App(
 @Preview
 @Composable
 private fun AppPreview() {
-    App()
+    App(content = { HomeScreen(sections = sampleSections) })
 }
 

@@ -12,6 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -27,25 +28,41 @@ import com.project.aluvery.ui.components.CardProductItem
 import com.project.aluvery.ui.components.ProductSection
 import com.project.aluvery.ui.components.SearchBar
 
+class HomeScreenUiState(searchText: String = "") {
+    var text by mutableStateOf(searchText)
+    val filter
+        get() = if (text.isNotBlank()) {
+            sampleProducts.filter {
+                it.name.contains(text, ignoreCase = true) || it.description?.contains(
+                    text,
+                    ignoreCase = true
+                ) ?: false
+            }
+        } else emptyList()
+
+    fun isFilterActive() : Boolean {
+        return text.isNotBlank()
+    }
+}
+
 @Composable
 fun HomeScreen(
     sections: Map<String, List<Product>>,
     modifier: Modifier = Modifier,
     searchText: String = ""
 ) {
-    var text by rememberSaveable { mutableStateOf(searchText.trim()) }
-    val filter by rememberSaveable(text) {
-        mutableStateOf(sampleProducts.filter {
-            it.name.contains(text, ignoreCase = true) || it.description?.contains(
-                text,
-                ignoreCase = true
-            ) ?: false
-        })
+    val state = remember {
+        HomeScreenUiState(searchText)
+    }
+    val text = state.text
+    val filter = remember(text) {
+        state.filter
     }
 
     Column(modifier) {
+
         SearchBar(text, { newValue ->
-            text = newValue
+            state.text = newValue
         })
 
         LazyColumn(
@@ -54,10 +71,14 @@ fun HomeScreen(
             contentPadding = PaddingValues(bottom = 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            if (text.isNotBlank()) {
+            if (state.isFilterActive()) {
                 if (filter.isEmpty()) {
                     item {
-                        Text(text = stringResource(R.string.empty_list),modifier =  Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
+                        Text(
+                            text = stringResource(R.string.empty_list),
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = TextAlign.Center
+                        )
                     }
 
                 } else {
