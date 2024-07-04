@@ -10,10 +10,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -21,7 +17,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.project.aluvery.R
 import com.project.aluvery.model.Product
-import com.project.aluvery.sample.sampleProducts
 import com.project.aluvery.sample.sampleSections
 import com.project.aluvery.ui.components.CardProductItem
 import com.project.aluvery.ui.components.ProductSection
@@ -29,33 +24,14 @@ import com.project.aluvery.ui.components.SearchBar
 
 class HomeScreenUiState(
     val sections: Map<String, List<Product>>,
-    private val products: List<Product> = emptyList(),
-    searchText: String = ""
+    val searchedProducts: List<Product> = emptyList(),
+    val searchText: String = "",
+    val onSearchChange: (String) -> Unit = {}
 ) {
-    var text by mutableStateOf(searchText)
-        private set
-    val filter
-        get() = if (text.isNotBlank()) {
-            sampleProducts.filter {
-                containsInNameOrDescription(it)
-            } + products.filter {
-                containsInNameOrDescription(it)
-            }
-        } else emptyList()
-
-    private fun containsInNameOrDescription(prod: Product) =
-        prod.name.contains(text, ignoreCase = true) || prod.description?.contains(
-            text,
-            ignoreCase = true
-        ) ?: false
-
     fun isFilterActive(): Boolean {
-        return text.isNotBlank()
+        return searchText.isNotBlank()
     }
 
-    val onSearchChange: (String) -> Unit = { searchText ->
-        text = searchText
-    }
 }
 
 @Composable
@@ -63,10 +39,8 @@ fun HomeScreen(
     state: HomeScreenUiState,
     modifier: Modifier = Modifier
 ) {
-    val text = state.text
-    val filter = remember(text) {
-        state.filter
-    }
+    val text = state.searchText
+    val filter = state.searchedProducts
     val sections = state.sections
 
     Column(modifier) {

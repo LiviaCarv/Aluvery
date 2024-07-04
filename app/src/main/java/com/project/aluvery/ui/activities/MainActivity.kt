@@ -1,7 +1,6 @@
 package com.project.aluvery.ui.activities
 
 import android.content.Intent
-import android.net.wifi.hotspot2.pps.HomeSp
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -13,14 +12,19 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
-import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.project.aluvery.dao.ProductDao
+import com.project.aluvery.model.Product
 import com.project.aluvery.sample.sampleCandies
 import com.project.aluvery.sample.sampleDrinks
+import com.project.aluvery.sample.sampleProducts
 import com.project.aluvery.sample.sampleSections
 import com.project.aluvery.ui.screens.HomeScreen
 import com.project.aluvery.ui.screens.HomeScreenUiState
@@ -42,9 +46,28 @@ class MainActivity : ComponentActivity() {
                     "Drinks" to sampleDrinks,
 
                     )
-                val state = remember(products) {
-                    HomeScreenUiState(sections, products = products)
+                var text by remember { mutableStateOf("") }
+
+                fun containsInNameOrDescription(prod: Product) =
+                    prod.name.contains(text, ignoreCase = true) || prod.description?.contains(
+                        text,
+                        ignoreCase = true
+                    ) ?: false
+
+                val filter = rememberSaveable(text, products){
+                    if (text.isNotBlank()) {
+                        sampleProducts.filter {
+                            containsInNameOrDescription(it)
+                        } + products.filter {
+                            containsInNameOrDescription(it)
+                        }
+                    } else emptyList()
                 }
+
+                val state = remember(products, text) {
+                    HomeScreenUiState(sections, searchedProducts = filter, searchText = text, onSearchChange = {text = it})
+                }
+
                 HomeScreen(state = state)
             }
         }
