@@ -10,6 +10,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -17,6 +22,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.project.aluvery.R
 import com.project.aluvery.model.Product
+import com.project.aluvery.sample.sampleCandies
+import com.project.aluvery.sample.sampleDrinks
+import com.project.aluvery.sample.sampleProducts
 import com.project.aluvery.sample.sampleSections
 import com.project.aluvery.ui.components.CardProductItem
 import com.project.aluvery.ui.components.ProductSection
@@ -32,6 +40,42 @@ class HomeScreenUiState(
         return searchText.isNotBlank()
     }
 
+}
+
+@Composable
+fun HomeScreen(
+    products: List<Product>
+) {
+    val sections = mapOf(
+        "Products" to products,
+        "Promotional Items" to sampleCandies + sampleDrinks,
+        "Candies" to sampleCandies,
+        "Drinks" to sampleDrinks,
+
+        )
+
+    var text by rememberSaveable { mutableStateOf("") }
+
+    fun containsInNameOrDescription(prod: Product) =
+        prod.name.contains(text, ignoreCase = true) || prod.description?.contains(
+            text,
+            ignoreCase = true
+        ) ?: false
+
+    val filter = rememberSaveable(text, products){
+        if (text.isNotBlank()) {
+            sampleProducts.filter {
+                containsInNameOrDescription(it)
+            } + products.filter {
+                containsInNameOrDescription(it)
+            }
+        } else emptyList()
+    }
+
+    val state = remember(products, text) {
+        HomeScreenUiState(sections, searchedProducts = filter, searchText = text, onSearchChange = {text = it})
+    }
+    HomeScreen(state = state)
 }
 
 @Composable
@@ -64,7 +108,7 @@ fun HomeScreen(
                     }
 
                 } else {
-                    items(filter) {
+                    items(  filter) {
                         CardProductItem(
                             product = it,
                             modifier = Modifier.padding(horizontal = 16.dp),
